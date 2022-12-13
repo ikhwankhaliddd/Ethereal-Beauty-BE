@@ -17,8 +17,8 @@ func FormatProductResponse(product Product) ProductFormatResponse {
 		Description: product.Description,
 		ImageURL:    "",
 		Price:       product.Price,
-		UserID:      product.UserID,
 		Slug:        product.Slug,
+		UserID:      product.UserID,
 	}
 
 	if len(product.ProductImages) > 0 {
