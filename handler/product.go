@@ -24,6 +24,8 @@ func (h *productHandler) GetProducts(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	response := helper.APIResponse("Success to get products", http.StatusOK, "success", userProducts)
+
+	formatter := products.FormatProductsResponse(userProducts)
+	response := helper.APIResponse("Success to get products", http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, response)
 }
