@@ -10,6 +10,7 @@ import (
 	"project_dwi/auth"
 	"project_dwi/handler"
 	"project_dwi/helper"
+	"project_dwi/products"
 	"project_dwi/users"
 	"strings"
 )
@@ -23,9 +24,15 @@ func main() {
 	}
 
 	usersRepository := users.NewRepository(db)
+	productRepository := products.NewRepository(db)
+
 	userService := users.NewService(usersRepository)
+	productService := products.NewService(productRepository)
+
 	authService := auth.NewService()
+
 	userHandler := handler.NewUserHandler(userService, authService)
+	productHandler := handler.NewProductHandler(productService)
 
 	router := gin.Default()
 	api := router.Group("/api/v1")
@@ -34,6 +41,8 @@ func main() {
 	api.POST("/sessions", userHandler.LoginUser)
 	api.POST("/checkEmail", userHandler.CheckEmailAvailability)
 	api.POST("/avatars", authMiddleware(authService, userService), userHandler.UploadAvatar)
+
+	api.GET("/products", productHandler.GetProducts)
 
 	router.Run()
 }

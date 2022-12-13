@@ -18,7 +18,7 @@ func NewRepository(db *gorm.DB) *repository {
 func (r *repository) FindAll() ([]Product, error) {
 	var products []Product
 
-	err := r.db.Preload("ProductImages", "productimages.is_primary = 1").Find(&products).Error
+	err := r.db.Preload("ProductImages", "product_images.is_primary = 1").Find(&products).Error
 	if err != nil {
 		return products, err
 	}
@@ -28,7 +28,7 @@ func (r *repository) FindAll() ([]Product, error) {
 func (r *repository) FindByID(userID int) ([]Product, error) {
 	var product []Product
 
-	err := r.db.Where("user_id", userID).Preload("ProductImages", "productimages.is_primary = 1").Find(&product).Error
+	err := r.db.Where("user_id", userID).Preload("ProductImages", "product_images.is_primary = 1").Find(&product).Error
 	if err != nil {
 		return product, err
 	}
