@@ -1,5 +1,7 @@
 package products
 
+import "strings"
+
 type ProductFormatResponse struct {
 	ID          int    `json:"id"`
 	Name        string `json:"product_name"`
@@ -38,4 +40,75 @@ func FormatProductsResponse(products []Product) []ProductFormatResponse {
 	}
 
 	return productsFormatter
+}
+
+type ProductDetailFormatter struct {
+	ID          int                     `json:"id"`
+	Name        string                  `json:"name"`
+	Description string                  `json:"description"`
+	ImageUrl    string                  `json:"image_url"`
+	Price       int                     `json:"price"`
+	UserID      int                     `json:"user_id"`
+	Slug        string                  `json:"slug"`
+	Benefits    []string                `json:"benefits"`
+	User        ProductUserFormatter    `json:"user"`
+	Images      []ProductImageFormatter `json:"images"`
+}
+
+type ProductUserFormatter struct {
+	Name     string `json:"name"`
+	ImageUrl string `json:"image_url"`
+}
+
+type ProductImageFormatter struct {
+	ImageUrl  string `json:"image_url"`
+	IsPrimary bool   `json:"is_primary"`
+}
+
+func FormatProductDetail(product Product) ProductDetailFormatter {
+	productDetailFormatter := ProductDetailFormatter{
+		ID:          product.ID,
+		Name:        product.Name,
+		Description: product.Description,
+		Price:       product.Price,
+		UserID:      product.UserID,
+		Slug:        product.Slug,
+		ImageUrl:    "",
+	}
+
+	if len(product.ProductImages) > 0 {
+		productDetailFormatter.ImageUrl = product.ProductImages[0].FileName
+	}
+
+	var benefits []string
+
+	for _, benefit := range strings.Split(product.Benefits, ",") {
+		benefits = append(benefits, strings.TrimSpace(benefit))
+	}
+	productDetailFormatter.Benefits = benefits
+
+	user := product.User
+	productUserFormatter := ProductUserFormatter{
+		Name:     user.Name,
+		ImageUrl: user.AvatarFileName,
+	}
+	productDetailFormatter.User = productUserFormatter
+
+	images := []ProductImageFormatter{}
+	for _, image := range product.ProductImages {
+		productImageFormatter := ProductImageFormatter{
+			ImageUrl: image.FileName,
+		}
+		isPrimary := false
+		if image.IsPrimary == 1 {
+			isPrimary = true
+		}
+		productImageFormatter.IsPrimary = isPrimary
+
+		images = append(images, productImageFormatter)
+	}
+
+	productDetailFormatter.Images = images
+
+	return productDetailFormatter
 }

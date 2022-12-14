@@ -1,6 +1,9 @@
 package products
 
-import "time"
+import (
+	"project_dwi/users"
+	"time"
+)
 
 type Product struct {
 	ID            int
@@ -14,6 +17,7 @@ type Product struct {
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	ProductImages []ProductImage
+	User          users.User
 }
 
 type ProductImage struct {

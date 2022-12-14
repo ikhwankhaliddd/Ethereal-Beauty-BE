@@ -4,7 +4,8 @@ import "gorm.io/gorm"
 
 type Repository interface {
 	FindAll() ([]Product, error)
-	FindByID(userID int) ([]Product, error)
+	FindByUserID(userID int) ([]Product, error)
+	FindByID(ID int) (Product, error)
 }
 
 type repository struct {
@@ -25,10 +26,19 @@ func (r *repository) FindAll() ([]Product, error) {
 	return products, nil
 }
 
-func (r *repository) FindByID(userID int) ([]Product, error) {
+func (r *repository) FindByUserID(userID int) ([]Product, error) {
 	var product []Product
 
 	err := r.db.Where("user_id", userID).Preload("ProductImages", "product_images.is_primary = 1").Find(&product).Error
+	if err != nil {
+		return product, err
+	}
+	return product, nil
+}
+
+func (r *repository) FindByID(ID int) (Product, error) {
+	var product Product
+	err := r.db.Preload("User").Preload("ProductImages").Where("id = ?", ID).Find(&product).Error
 	if err != nil {
 		return product, err
 	}
