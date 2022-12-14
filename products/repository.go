@@ -7,6 +7,7 @@ type Repository interface {
 	FindByUserID(userID int) ([]Product, error)
 	FindByID(ID int) (Product, error)
 	Save(product Product) (Product, error)
+	Update(product Product) (Product, error)
 }
 
 type repository struct {
@@ -52,5 +53,13 @@ func (r *repository) Save(product Product) (Product, error) {
 		return product, err
 	}
 
+	return product, nil
+}
+
+func (r *repository) Update(product Product) (Product, error) {
+	err := r.db.Save(&product).Error
+	if err != nil {
+		return product, err
+	}
 	return product, nil
 }

@@ -81,3 +81,45 @@ func (h *productHandler) CreateProduct(c *gin.Context) {
 	response := helper.APIResponse("Success to create product", http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, response)
 }
+
+func (h *productHandler) UpdateProduct(c *gin.Context) {
+	var inputID products.GetProductDetailInput
+
+	err := c.ShouldBindUri(&inputID)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{
+			"errors": errors,
+		}
+
+		response := helper.APIResponse("Failed to update product", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	var inputData products.CreateProductInput
+	err = c.ShouldBindJSON(&inputData)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{
+			"errors": errors,
+		}
+
+		response := helper.APIResponse("Failed update product", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	currentUser := c.MustGet("currentUser").(users.User)
+	inputData.User = currentUser
+
+	updatedProduct, err := h.productService.UpdateProduct(inputID, inputData)
+	if err != nil {
+		response := helper.APIResponse("Failed update product", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	formatter := products.FormatProductResponse(updatedProduct)
+	response := helper.APIResponse("Success to update product", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}

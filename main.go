@@ -47,7 +47,7 @@ func main() {
 	api.GET("/products", productHandler.GetProducts)
 	api.GET("/products/:id", productHandler.GetProduct)
 	api.POST("/products", authMiddleware(authService, userService), productHandler.CreateProduct)
-
+	api.PUT("/products/:id", authMiddleware(authService, userService), productHandler.UpdateProduct)
 	router.Run()
 }
 
