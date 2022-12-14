@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"project_dwi/helper"
 	"project_dwi/products"
+	"project_dwi/users"
 	"strconv"
 )
 
@@ -48,5 +49,35 @@ func (h *productHandler) GetProduct(c *gin.Context) {
 	formatter := products.FormatProductDetail(productDetail)
 
 	response := helper.APIResponse("Success to get product detail", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *productHandler) CreateProduct(c *gin.Context) {
+	var input products.CreateProductInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{
+			"errors": errors,
+		}
+
+		response := helper.APIResponse("Failed create product", http.StatusBadRequest, "error", errorMessage)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	currentUser := c.MustGet("currentUser").(users.User)
+
+	input.User = currentUser
+
+	newProduct, err := h.productService.CreateProduct(input)
+	if err != nil {
+		response := helper.APIResponse("Failed create product", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := products.FormatProductResponse(newProduct)
+	response := helper.APIResponse("Success to create product", http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, response)
 }

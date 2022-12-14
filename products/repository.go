@@ -6,6 +6,7 @@ type Repository interface {
 	FindAll() ([]Product, error)
 	FindByUserID(userID int) ([]Product, error)
 	FindByID(ID int) (Product, error)
+	Save(product Product) (Product, error)
 }
 
 type repository struct {
@@ -42,5 +43,14 @@ func (r *repository) FindByID(ID int) (Product, error) {
 	if err != nil {
 		return product, err
 	}
+	return product, nil
+}
+
+func (r *repository) Save(product Product) (Product, error) {
+	err := r.db.Create(&product).Error
+	if err != nil {
+		return product, err
+	}
+
 	return product, nil
 }
