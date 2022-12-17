@@ -11,6 +11,7 @@ import (
 	"project_dwi/handler"
 	"project_dwi/helper"
 	"project_dwi/products"
+	"project_dwi/transactions"
 	"project_dwi/users"
 	"strings"
 )
@@ -25,14 +26,17 @@ func main() {
 
 	usersRepository := users.NewRepository(db)
 	productRepository := products.NewRepository(db)
+	transactionRepository := transactions.NewRepository(db)
 
 	userService := users.NewService(usersRepository)
 	productService := products.NewService(productRepository)
+	transactionService := transactions.NewService(transactionRepository, productRepository)
 
 	authService := auth.NewService()
 
 	userHandler := handler.NewUserHandler(userService, authService)
 	productHandler := handler.NewProductHandler(productService)
+	transactionHandler := handler.NewTransactionsHandler(transactionService)
 
 	router := gin.Default()
 	router.Static("/images", "./images")
@@ -49,6 +53,8 @@ func main() {
 	api.POST("/products", authMiddleware(authService, userService), productHandler.CreateProduct)
 	api.PUT("/products/:id", authMiddleware(authService, userService), productHandler.UpdateProduct)
 	api.POST("/product-images", authMiddleware(authService, userService), productHandler.UploadProductImage)
+
+	api.GET("products/:id/transactions", authMiddleware(authService, userService), transactionHandler.GetTransactionsByProductID)
 	router.Run()
 }
 
