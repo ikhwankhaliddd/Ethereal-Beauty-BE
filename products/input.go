@@ -16,6 +16,6 @@ type CreateProductInput struct {
 
 type CreateProductImageInput struct {
 	ProductID int  `form:"product_id" binding:"required"`
-	IsPrimary bool `form:"is_primary" binding:"required"`
+	IsPrimary bool `form:"is_primary"`
 	User      users.User
 }
