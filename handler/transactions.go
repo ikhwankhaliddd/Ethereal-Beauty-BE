@@ -38,3 +38,19 @@ func (h *transactionHandler) GetTransactionsByProductID(c *gin.Context) {
 	response := helper.APIResponse("Success to get product's transactions", http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, response)
 }
+
+func (h *transactionHandler) GetUserTransactions(c *gin.Context) {
+	currentUser := c.MustGet("currentUser").(users.User)
+
+	userID := currentUser.ID
+
+	allTransactions, err := h.service.GetUserTransactions(userID)
+	if err != nil {
+		response := helper.APIResponse("Failed to get user's transactions", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	formatter := transactions.FormatUserTransactions(allTransactions)
+	response := helper.APIResponse("Success to get user's transactions", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}

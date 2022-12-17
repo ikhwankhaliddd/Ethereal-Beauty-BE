@@ -1,6 +1,7 @@
 package transactions
 
 import (
+	"project_dwi/products"
 	"project_dwi/users"
 	"time"
 )
@@ -13,6 +14,7 @@ type Transactions struct {
 	Status    string
 	Code      string
 	User      users.User
+	Product   products.Product
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
