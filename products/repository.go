@@ -8,6 +8,8 @@ type Repository interface {
 	FindByID(ID int) (Product, error)
 	Save(product Product) (Product, error)
 	Update(product Product) (Product, error)
+	CreateImage(productImage ProductImage) (ProductImage, error)
+	MarkAllImagesAsNonPrimary(productID int) (bool, error)
 }
 
 type repository struct {
@@ -62,4 +64,20 @@ func (r *repository) Update(product Product) (Product, error) {
 		return product, err
 	}
 	return product, nil
+}
+
+func (r *repository) CreateImage(productImage ProductImage) (ProductImage, error) {
+	err := r.db.Create(&productImage).Error
+	if err != nil {
+		return productImage, err
+	}
+	return productImage, nil
+}
+
+func (r *repository) MarkAllImagesAsNonPrimary(productID int) (bool, error) {
+	err := r.db.Model(&ProductImage{}).Where("product_id = ?", productID).Update("is_primary", false).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

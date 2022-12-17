@@ -11,6 +11,7 @@ type Service interface {
 	GetProductDetail(input GetProductDetailInput) (Product, error)
 	CreateProduct(input CreateProductInput) (Product, error)
 	UpdateProduct(inputID GetProductDetailInput, inputData CreateProductInput) (Product, error)
+	SaveProductImage(input CreateProductImageInput, fileLocation string) (ProductImage, error)
 }
 
 type service struct {
@@ -82,4 +83,37 @@ func (s *service) UpdateProduct(inputID GetProductDetailInput, inputData CreateP
 		return updatedProduct, err
 	}
 	return updatedProduct, nil
+}
+
+func (s *service) SaveProductImage(input CreateProductImageInput, fileLocation string) (ProductImage, error) {
+	product, err := s.repository.FindByID(input.ProductID)
+	if err != nil {
+		return ProductImage{}, err
+	}
+
+	if product.UserID != input.User.ID {
+		return ProductImage{}, errors.New("not an owner of this product")
+	}
+	isPrimary := 0
+
+	if input.IsPrimary == true {
+		isPrimary = 1
+		_, err := s.repository.MarkAllImagesAsNonPrimary(input.ProductID)
+		if err != nil {
+			return ProductImage{}, err
+		}
+	}
+
+	productImage := ProductImage{
+		ID:       input.ProductID,
+		FileName: fileLocation,
+	}
+	productImage.IsPrimary = isPrimary
+
+	newProductImage, err := s.repository.CreateImage(productImage)
+	if err != nil {
+		return newProductImage, err
+	}
+
+	return newProductImage, nil
 }

@@ -13,3 +13,9 @@ type CreateProductInput struct {
 	Benefits    string `json:"benefits" binding:"required"`
 	User        users.User
 }
+
+type CreateProductImageInput struct {
+	ProductID int  `form:"product_id" binding:"required"`
+	IsPrimary bool `form:"is_primary" binding:"required"`
+	User      users.User
+}
