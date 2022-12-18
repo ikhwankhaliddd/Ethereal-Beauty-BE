@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
+	"os"
 )
 
 type Service interface {
@@ -17,7 +18,8 @@ func NewService() *jwtService {
 	return &jwtService{}
 }
 
-var SECRET_KEY = []byte("ETHEREAL_BEAUTY_s3cr3T_k3Y")
+var JWT_SECRET = os.Getenv("JWT_SECRET")
+var SECRET_KEY = []byte(JWT_SECRET)
 
 func (s *jwtService) GenerateToken(userID int) (string, error) {
 	payload := jwt.MapClaims{}
