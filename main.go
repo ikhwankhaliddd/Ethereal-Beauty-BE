@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -41,6 +42,7 @@ func main() {
 	transactionHandler := handler.NewTransactionsHandler(transactionService)
 
 	router := gin.Default()
+	router.Use(cors.Default())
 	router.Static("/images", "./images")
 
 	api := router.Group("/api/v1")
@@ -49,6 +51,7 @@ func main() {
 	api.POST("/sessions", userHandler.LoginUser)
 	api.POST("/checkEmail", userHandler.CheckEmailAvailability)
 	api.POST("/avatars", authMiddleware(authService, userService), userHandler.UploadAvatar)
+	api.GET("/users/fetch", authMiddleware(authService, userService), userHandler.FetchUser)
 
 	api.GET("/products", productHandler.GetProducts)
 	api.GET("/products/:id", productHandler.GetProduct)
@@ -59,6 +62,7 @@ func main() {
 	api.GET("products/:id/transactions", authMiddleware(authService, userService), transactionHandler.GetTransactionsByProductID)
 	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
 	api.POST("/transactions", authMiddleware(authService, userService), transactionHandler.CreateUserTransaction)
+	api.POST("/transactions/notification", transactionHandler.GetNotification)
 	router.Run()
 }
 

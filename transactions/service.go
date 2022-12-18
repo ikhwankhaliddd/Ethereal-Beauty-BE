@@ -13,6 +13,7 @@ type Service interface {
 	GetTransactionsByProductID(input GetTransactionsByProductIDInput) ([]Transactions, error)
 	GetUserTransactions(userID int) ([]Transactions, error)
 	CreateUserTransaction(input CreateUserTransactionInput) (Transactions, error)
+	ProcessPayment(input TransactionNotificationInput) error
 }
 
 type service struct {
@@ -79,6 +80,43 @@ func (s *service) CreateUserTransaction(input CreateUserTransactionInput) (Trans
 	newTransaction, err = s.repository.Update(newTransaction)
 
 	return newTransaction, nil
+}
+
+func (s *service) ProcessPayment(input TransactionNotificationInput) error {
+	transactionID, _ := strconv.Atoi(input.OrderID)
+
+	transaction, err := s.repository.GetByID(transactionID)
+	if err != nil {
+		return err
+	}
+
+	if input.PaymentType == "credit_card" && input.TransactionStatus == "capture" && input.FraudStatus == "accept" {
+		transaction.Status = "paid"
+	} else if input.TransactionStatus == "settlement" {
+		transaction.Status = "paid"
+	} else if input.TransactionStatus == "deny" || input.TransactionStatus == "expire" || input.TransactionStatus == "cancel" {
+		transaction.Status = "cancelled"
+	}
+
+	updatedTransaction, err := s.repository.Update(transaction)
+	if err != nil {
+		return err
+	}
+
+	product, err := s.productRepository.FindByID(updatedTransaction.ProductID)
+	if err != nil {
+		return err
+	}
+
+	if updatedTransaction.Status == "paid" {
+		product.UserCount += 1
+
+		_, err := s.productRepository.Update(product)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func generateOrderCode() string {

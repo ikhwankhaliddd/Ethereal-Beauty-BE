@@ -48,6 +48,7 @@ type ProductDetailFormatter struct {
 	Description string                  `json:"description"`
 	ImageUrl    string                  `json:"image_url"`
 	Price       int                     `json:"price"`
+	UserCount   int                     `json:"user_count"`
 	UserID      int                     `json:"user_id"`
 	Slug        string                  `json:"slug"`
 	Benefits    []string                `json:"benefits"`
@@ -72,6 +73,7 @@ func FormatProductDetail(product Product) ProductDetailFormatter {
 		Description: product.Description,
 		Price:       product.Price,
 		UserID:      product.UserID,
+		UserCount:   product.UserCount,
 		Slug:        product.Slug,
 		ImageUrl:    "",
 	}
