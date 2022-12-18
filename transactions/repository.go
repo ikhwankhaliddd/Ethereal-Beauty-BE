@@ -5,6 +5,8 @@ import "gorm.io/gorm"
 type Repository interface {
 	GetTransactionsByProductID(productID int) ([]Transactions, error)
 	GetUserTransactions(userID int) ([]Transactions, error)
+	Save(transactions Transactions) (Transactions, error)
+	Update(transaction Transactions) (Transactions, error)
 }
 
 type repository struct {
@@ -31,6 +33,23 @@ func (r *repository) GetUserTransactions(userID int) ([]Transactions, error) {
 	err := r.db.Preload("Product.ProductImages", "product_images.is_primary = 1").Where("user_id = ?", userID).Order("id desc").Find(&transactions).Error
 	if err != nil {
 		return []Transactions{}, err
+	}
+	return transactions, nil
+}
+
+func (r *repository) Save(transactions Transactions) (Transactions, error) {
+	err := r.db.Create(&transactions).Error
+	if err != nil {
+		return transactions, err
+	}
+	return transactions, nil
+}
+
+func (r *repository) Update(transactions Transactions) (Transactions, error) {
+	err := r.db.Save(&transactions).Error
+
+	if err != nil {
+		return transactions, err
 	}
 	return transactions, nil
 }

@@ -10,6 +10,7 @@ import (
 	"project_dwi/auth"
 	"project_dwi/handler"
 	"project_dwi/helper"
+	"project_dwi/payment"
 	"project_dwi/products"
 	"project_dwi/transactions"
 	"project_dwi/users"
@@ -30,7 +31,8 @@ func main() {
 
 	userService := users.NewService(usersRepository)
 	productService := products.NewService(productRepository)
-	transactionService := transactions.NewService(transactionRepository, productRepository)
+	paymentService := payment.NewService()
+	transactionService := transactions.NewService(transactionRepository, productRepository, paymentService)
 
 	authService := auth.NewService()
 
@@ -56,6 +58,7 @@ func main() {
 
 	api.GET("products/:id/transactions", authMiddleware(authService, userService), transactionHandler.GetTransactionsByProductID)
 	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
+	api.POST("/transactions", authMiddleware(authService, userService), transactionHandler.CreateUserTransaction)
 	router.Run()
 }
 

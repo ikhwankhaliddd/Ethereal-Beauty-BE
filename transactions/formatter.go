@@ -24,6 +24,16 @@ type ProductFormatter struct {
 	ImageUrl string `json:"image_url"`
 }
 
+type TransactionFormatter struct {
+	ID         int    `json:"id"`
+	ProductID  int    `json:"product_id"`
+	UserID     int    `json:"user_id"`
+	Amount     int    `json:"amount"`
+	Status     string `json:"status"`
+	Code       string `json:"code"`
+	PaymentURL string `json:"payment_url"`
+}
+
 func FormatProductTransaction(transaction Transactions) ProductTransactionsFormatJSON {
 	formatter := ProductTransactionsFormatJSON{
 		ID:        transaction.ID,
@@ -82,4 +92,17 @@ func FormatUserTransactions(transactions []Transactions) []UserTransactionsForma
 		transactionsFormatter = append(transactionsFormatter, formatter)
 	}
 	return transactionsFormatter
+}
+
+func FormatTransaction(transaction Transactions) TransactionFormatter {
+	formatter := TransactionFormatter{
+		ID:         transaction.ID,
+		ProductID:  transaction.ProductID,
+		UserID:     transaction.UserID,
+		Amount:     transaction.Amount,
+		Status:     transaction.Status,
+		Code:       transaction.Code,
+		PaymentURL: transaction.PaymentURL,
+	}
+	return formatter
 }
