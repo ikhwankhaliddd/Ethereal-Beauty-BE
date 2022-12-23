@@ -5,6 +5,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
@@ -22,10 +23,10 @@ import (
 
 func main() {
 
-	//err := godotenv.Load()
-	//if err != nil {
-	//	log.Fatal("Cant load .env file")
-	//}
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Cant load .env file")
+	}
 
 	dbUser := os.Getenv("DB_USER")
 	dbPass := os.Getenv("DB_PASSWORD")
@@ -78,7 +79,7 @@ func main() {
 	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
 	api.POST("/transactions", authMiddleware(authService, userService), transactionHandler.CreateUserTransaction)
 	api.POST("/transactions/notification", transactionHandler.GetNotification)
-	router.Run()
+	router.Run(":80")
 }
 
 func authMiddleware(authService auth.Service, userService users.Service) gin.HandlerFunc {
