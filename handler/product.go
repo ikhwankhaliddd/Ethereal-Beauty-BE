@@ -18,6 +18,15 @@ func NewProductHandler(productService products.Service) *productHandler {
 	return &productHandler{productService}
 }
 
+// GetProducts godoc
+// @Summary      Get products
+// @Description  get products data by user ID
+// @Tags         Products
+// @Produce      json
+// @Param        user_id   query      int  true  "User ID"
+// @Success      200  {object}  helper.Response{data=products.ProductDetailFormatter} "Success to get product"
+// @Failure      400  {object}  helper.Response{data=interface{}} "Failed to get product"
+// @Router       /products [get]
 func (h *productHandler) GetProducts(c *gin.Context) {
 	userID, _ := strconv.Atoi(c.Query("user_id"))
 	userProducts, err := h.productService.GetProducts(userID)
@@ -32,6 +41,15 @@ func (h *productHandler) GetProducts(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// GetProduct Detail godoc
+// @Summary      Get product detail
+// @Description  get product detail data by user ID
+// @Tags         Products
+// @Produce      json
+// @Param        user_id   path      int  true  "User ID"
+// @Success      200  {object}  helper.Response{data=products.ProductDetailFormatter} "Success to get product"
+// @Failure      400  {object}  helper.Response{data=interface{}} "Failed to get product detail"
+// @Router       /products/:id [get]
 func (h *productHandler) GetProduct(c *gin.Context) {
 	var input products.GetProductDetailInput
 
@@ -53,6 +71,17 @@ func (h *productHandler) GetProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// CreateProduct godoc
+// @Summary      Create product
+// @Description  create products
+// @Tags         Products
+// @Accept		 json
+// @Produce      json
+// @Param        payload   body      products.CreateProductInput  true  "Request Body"
+// @Security	 ApiKeyAuth
+// @Success      200  {object}  helper.Response{data=products.ProductDetailFormatter} "Success to create product"
+// @Failure      400  {object}  helper.Response{data=interface{}} "Failed to create product"
+// @Router       /products [post]
 func (h *productHandler) CreateProduct(c *gin.Context) {
 	var input products.CreateProductInput
 
@@ -83,6 +112,17 @@ func (h *productHandler) CreateProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// UpdateProduct godoc
+// @Summary      Update product
+// @Description  update products
+// @Tags         Products
+// @Accept		 json
+// @Produce      json
+// @Param        inputID   path      int  true  "Input ID"
+// @Security	 ApiKeyAuth
+// @Success      200  {object}  helper.Response{data=products.ProductDetailFormatter} "Success to update product"
+// @Failure      400  {object}  helper.Response{data=interface{}} "Failed to update product"
+// @Router       /products/:id [put]
 func (h *productHandler) UpdateProduct(c *gin.Context) {
 	var inputID products.GetProductDetailInput
 
@@ -125,6 +165,17 @@ func (h *productHandler) UpdateProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// UploadProductImage godoc
+// @Summary      Upload product image
+// @Description  Upload product image
+// @Tags         Products
+// @Accept		 json
+// @Produce      json
+// @Param        payload   formData      products.CreateProductImageInput  true  "Request Data"
+// @Security	 ApiKeyAuth
+// @Success      200  {object}  helper.Response{data=products.ProductDetailFormatter} "Success to get product"
+// @Failure      400  {object}  helper.Response{data=interface{}} "Failed to get product"
+// @Router       /product-images [post]
 func (h *productHandler) UploadProductImage(c *gin.Context) {
 	var input products.CreateProductImageInput
 

@@ -1,0 +1,719 @@
+basePath: /api/v1
+definitions:
+  helper.Meta:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  helper.Response:
+    properties:
+      data: {}
+      meta:
+        $ref: '#/definitions/helper.Meta'
+    type: object
+  products.CreateProductInput:
+    properties:
+      benefits:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      user:
+        $ref: '#/definitions/users.User'
+    required:
+    - benefits
+    - description
+    - name
+    - price
+    type: object
+  products.ProductDetailFormatter:
+    properties:
+      benefits:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/products.ProductImageFormatter'
+        type: array
+      name:
+        type: string
+      price:
+        type: integer
+      slug:
+        type: string
+      user:
+        $ref: '#/definitions/products.ProductUserFormatter'
+      user_count:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  products.ProductImageFormatter:
+    properties:
+      image_url:
+        type: string
+      is_primary:
+        type: boolean
+    type: object
+  products.ProductUserFormatter:
+    properties:
+      image_url:
+        type: string
+      name:
+        type: string
+    type: object
+  transactions.CreateUserTransactionInput:
+    properties:
+      amount:
+        type: integer
+      product_id:
+        type: integer
+      user:
+        $ref: '#/definitions/users.User'
+    required:
+    - amount
+    - product_id
+    type: object
+  transactions.GetTransactionsByProductIDInput:
+    properties:
+      id:
+        type: integer
+      user:
+        $ref: '#/definitions/users.User'
+    required:
+    - id
+    type: object
+  transactions.TransactionFormatter:
+    properties:
+      amount:
+        type: integer
+      code:
+        type: string
+      id:
+        type: integer
+      payment_url:
+        type: string
+      product_id:
+        type: integer
+      status:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  transactions.TransactionNotificationInput:
+    properties:
+      fraud_status:
+        type: string
+      order_id:
+        type: string
+      payment_type:
+        type: string
+      transaction_status:
+        type: string
+    type: object
+  users.CheckEmail:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  users.LoginUserInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  users.RegisterUserInput:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - username
+    type: object
+  users.User:
+    properties:
+      avatarFileName:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      passwordHash:
+        type: string
+      role:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
+  users.UserFormatResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      name:
+        type: string
+      token:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is the API documentation of Ethereal Beauty.
+  title: Ethereal Beauty Backend API Docs
+  version: "1.0"
+paths:
+  /avatars:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload account avatar
+      parameters:
+      - description: Request
+        in: formData
+        name: AvatarFileName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to upload avatar
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/users.UserFormatResponse'
+              type: object
+        "400":
+          description: Failed to upload avatar
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - ApiAuthKey: []
+      summary: Upload Avatar
+      tags:
+      - User
+  /checkEmail:
+    post:
+      consumes:
+      - application/json
+      description: Check an email whether it's available or not
+      parameters:
+      - description: Request Body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/users.CheckEmail'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to check email
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/users.UserFormatResponse'
+              type: object
+        "400":
+          description: Failed to check email
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Check Email Availability
+      tags:
+      - User
+  /product-images:
+    post:
+      consumes:
+      - application/json
+      description: Upload product image
+      parameters:
+      - in: formData
+        name: isPrimary
+        type: boolean
+      - in: formData
+        name: productID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to get product
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/products.ProductDetailFormatter'
+              type: object
+        "400":
+          description: Failed to get product
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Upload product image
+      tags:
+      - Products
+  /products:
+    get:
+      description: get products data by user ID
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to get product
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/products.ProductDetailFormatter'
+              type: object
+        "400":
+          description: Failed to get product
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Get products
+      tags:
+      - Products
+    post:
+      consumes:
+      - application/json
+      description: create products
+      parameters:
+      - description: Request Body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/products.CreateProductInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to create product
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/products.ProductDetailFormatter'
+              type: object
+        "400":
+          description: Failed to create product
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create product
+      tags:
+      - Products
+  /products/:id:
+    get:
+      description: get product detail data by user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to get product
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/products.ProductDetailFormatter'
+              type: object
+        "400":
+          description: Failed to get product detail
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Get product detail
+      tags:
+      - Products
+    put:
+      consumes:
+      - application/json
+      description: update products
+      parameters:
+      - description: Input ID
+        in: path
+        name: inputID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to update product
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/products.ProductDetailFormatter'
+              type: object
+        "400":
+          description: Failed to update product
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update product
+      tags:
+      - Products
+  /products/:id/transactions:
+    get:
+      consumes:
+      - application/json
+      description: Get User Transactions By Product ID
+      parameters:
+      - description: Request Body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/transactions.GetTransactionsByProductIDInput'
+      - description: Path
+        in: path
+        name: product_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to get transactions data
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/transactions.TransactionFormatter'
+              type: object
+        "400":
+          description: Failed to get transactions data
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - ApiAuthKey: []
+      summary: Get Transactions By Product ID
+      tags:
+      - Transactions
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register an account
+      parameters:
+      - description: Request Body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/users.RegisterUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to register an account
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/users.UserFormatResponse'
+              type: object
+        "400":
+          description: Failed to register an account
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Register User
+      tags:
+      - User
+  /sessions:
+    post:
+      consumes:
+      - application/json
+      description: Login an account
+      parameters:
+      - description: Request Body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/users.LoginUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to login
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/users.UserFormatResponse'
+              type: object
+        "400":
+          description: Failed to login
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Login User
+      tags:
+      - User
+  /transactions:
+    get:
+      description: Get User Transactions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to get user transaction data
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/transactions.TransactionFormatter'
+              type: object
+        "400":
+          description: Failed to get user transaction
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - ApiAuthKey: []
+      summary: Get User Transactions
+      tags:
+      - Transactions
+    post:
+      consumes:
+      - application/json
+      description: Create User Transactions
+      parameters:
+      - description: Request Body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/transactions.CreateUserTransactionInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to Create Transaction
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/transactions.TransactionFormatter'
+              type: object
+        "400":
+          description: Failed to create transaction
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - ApiAuthKey: []
+      summary: Create User Transaction
+      tags:
+      - Transactions
+  /transactions/notification:
+    post:
+      consumes:
+      - application/json
+      description: Get Notification from Midtrans
+      parameters:
+      - description: Request Body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/transactions.TransactionNotificationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to get notification
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/transactions.TransactionFormatter'
+              type: object
+        "400":
+          description: Failed to get notification
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - ApiAuthKey: []
+      summary: Get Notification
+      tags:
+      - Transactions
+  /users/fetch:
+    post:
+      consumes:
+      - application/json
+      description: Fetch User
+      parameters:
+      - description: Request Body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/users.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to fetch user
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/users.UserFormatResponse'
+              type: object
+        "400":
+          description: Failed to fetch user
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - ApiAuthKey: []
+      summary: Fetch User
+      tags:
+      - User
+schemes:
+- http
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

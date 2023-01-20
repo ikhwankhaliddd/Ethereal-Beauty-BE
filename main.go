@@ -6,12 +6,15 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"os"
 	"project_dwi/auth"
+	"project_dwi/docs"
 	"project_dwi/handler"
 	"project_dwi/helper"
 	"project_dwi/payment"
@@ -21,6 +24,16 @@ import (
 	"strings"
 )
 
+// @title Ethereal Beauty Backend API Docs
+// @version 1.0
+// @description This is the API documentation of Ethereal Beauty.
+
+// @host localhost:8080
+// @BasePath /api/v1
+// @schemes http
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 
 	err := godotenv.Load()
@@ -58,6 +71,7 @@ func main() {
 	transactionHandler := handler.NewTransactionsHandler(transactionService)
 
 	router := gin.Default()
+	docs.SwaggerInfo.BasePath = "/api/v1"
 	router.Use(cors.Default())
 	router.Static("/images", "./images")
 
@@ -79,7 +93,8 @@ func main() {
 	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
 	api.POST("/transactions", authMiddleware(authService, userService), transactionHandler.CreateUserTransaction)
 	api.POST("/transactions/notification", transactionHandler.GetNotification)
-	router.Run(":80")
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.Run(":8081")
 }
 
 func authMiddleware(authService auth.Service, userService users.Service) gin.HandlerFunc {

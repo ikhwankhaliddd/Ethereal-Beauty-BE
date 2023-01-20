@@ -18,6 +18,16 @@ func NewUserHandler(userService users.Service, authService auth.Service) *userHa
 	return &userHandler{userService, authService}
 }
 
+// RegisterUser godoc
+// @Summary      Register User
+// @Description  Register an account
+// @Tags         User
+// @Accept		 json
+// @Produce      json
+// @Param        payload   body      users.RegisterUserInput  true  "Request Body"
+// @Success      200  {object}  helper.Response{data=users.UserFormatResponse} "Success to register an account"
+// @Failure      400  {object}  helper.Response{data=interface{}} "Failed to register an account"
+// @Router       /register [post]
 func (h *userHandler) RegisterUser(c *gin.Context) {
 	var input users.RegisterUserInput
 
@@ -47,6 +57,16 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// LoginUser godoc
+// @Summary      Login User
+// @Description  Login an account
+// @Tags         User
+// @Accept		 json
+// @Produce      json
+// @Param        payload   body      users.LoginUserInput  true  "Request Body"
+// @Success      200  {object}  helper.Response{data=users.UserFormatResponse} "Success to login"
+// @Failure      400  {object}  helper.Response{data=interface{}} "Failed to login"
+// @Router       /sessions [post]
 func (h *userHandler) LoginUser(c *gin.Context) {
 	var input users.LoginUserInput
 
@@ -78,6 +98,16 @@ func (h *userHandler) LoginUser(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// CheckEmailAvailability godoc
+// @Summary      Check Email Availability
+// @Description  Check an email whether it's available or not
+// @Tags         User
+// @Accept		 json
+// @Produce      json
+// @Param        payload   body      users.CheckEmail  true  "Request Body"
+// @Success      200  {object}  helper.Response{data=users.UserFormatResponse} "Success to check email"
+// @Failure      400  {object}  helper.Response{data=interface{}} "Failed to check email"
+// @Router       /checkEmail [post]
 func (h *userHandler) CheckEmailAvailability(c *gin.Context) {
 	var input users.CheckEmail
 
@@ -110,6 +140,17 @@ func (h *userHandler) CheckEmailAvailability(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// UploadAvatar godoc
+// @Summary      Upload Avatar
+// @Description  Upload account avatar
+// @Tags         User
+// @Accept		 mpfd
+// @Produce      json
+// @Param        AvatarFileName   formData      string  true  "Request"
+// @Security	 ApiAuthKey
+// @Success      200  {object}  helper.Response{data=users.UserFormatResponse} "Success to upload avatar"
+// @Failure      400  {object}  helper.Response{data=interface{}} "Failed to upload avatar"
+// @Router       /avatars [post]
 func (h *userHandler) UploadAvatar(c *gin.Context) {
 	file, err := c.FormFile("avatar")
 
@@ -153,6 +194,17 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// FetchUser godoc
+// @Summary      Fetch User
+// @Description  Fetch User
+// @Tags         User
+// @Accept		 json
+// @Produce      json
+// @Param        payload   body      users.User  true  "Request Body"
+// @Security	 ApiAuthKey
+// @Success      200  {object}  helper.Response{data=users.UserFormatResponse} "Success to fetch user"
+// @Failure      400  {object}  helper.Response{data=interface{}} "Failed to fetch user"
+// @Router       /users/fetch [post]
 func (h *userHandler) FetchUser(c *gin.Context) {
 	currentUser := c.MustGet("currentUser").(users.User)
 

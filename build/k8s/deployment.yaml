@@ -1,0 +1,7 @@
+apiVersion: app/v1
+kind: Deployment
+
+metadata:
+  name: ethereal-beauty-deployment
+  labels:
+    app: ethereal-beauty
