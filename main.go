@@ -79,7 +79,7 @@ func main() {
 
 	api := router.Group("/api/v1")
 
-	api.GET("/", helloHandler.SayHello)
+	router.GET("/", helloHandler.SayHello)
 	api.POST("/register", userHandler.RegisterUser)
 	api.POST("/sessions", userHandler.LoginUser)
 	api.POST("/checkEmail", userHandler.CheckEmailAvailability)
