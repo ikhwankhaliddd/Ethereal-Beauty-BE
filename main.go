@@ -70,6 +70,7 @@ func main() {
 	userHandler := handler.NewUserHandler(userService, authService)
 	productHandler := handler.NewProductHandler(productService)
 	transactionHandler := handler.NewTransactionsHandler(transactionService)
+	helloHandler := handler.NewHelloHandler()
 
 	router := gin.Default()
 	docs.SwaggerInfo.BasePath = "/api/v1"
@@ -78,6 +79,7 @@ func main() {
 
 	api := router.Group("/api/v1")
 
+	api.GET("/", helloHandler.SayHello)
 	api.POST("/register", userHandler.RegisterUser)
 	api.POST("/sessions", userHandler.LoginUser)
 	api.POST("/checkEmail", userHandler.CheckEmailAvailability)
