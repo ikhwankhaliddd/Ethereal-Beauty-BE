@@ -46,6 +46,7 @@ func main() {
 	dbName := os.Getenv("DB_NAME")
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
+	appPort := os.Getenv("PORT")
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPass, dbHost, dbPort, dbName)
 	fmt.Println(dsn)
@@ -94,7 +95,7 @@ func main() {
 	api.POST("/transactions", authMiddleware(authService, userService), transactionHandler.CreateUserTransaction)
 	api.POST("/transactions/notification", transactionHandler.GetNotification)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.Run(":8081")
+	router.Run(":" + appPort)
 }
 
 func authMiddleware(authService auth.Service, userService users.Service) gin.HandlerFunc {
