@@ -19,19 +19,19 @@ Ethereal Beauty is a skincare ecommerce application built using Go (Gin), GORM, 
 ## Installation
 
 1. Clone the repository:
-git clone https://github.com/ikhwankhaliddd/Ethereal-Beauty-BE.git
+`git clone https://github.com/ikhwankhaliddd/Ethereal-Beauty-BE.git`
 
 2. Change into the project directory:
-cd ethereal-beauty
+`cd ethereal-beauty`
 
 3. Install the required dependencies:
-go get -u github.com/gin-gonic/gin
-go get -u github.com/lib/pq
+`go get -u github.com/gin-gonic/gin`
+`go get -u github.com/lib/pq`
 
 4. Set up the PostgreSQL database and update the database configuration in `config.yaml`.
 
 5. Run the application:
-go run main.go
+`go run main.go`
 
 
 6. Access the application in your web browser at `http://localhost:8000`.
